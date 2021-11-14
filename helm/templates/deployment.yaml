@@ -1,0 +1,59 @@
+---
+# Service to expose the application
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-svc
+spec:
+  selector:
+    app: application-pod
+  ports:
+    - name: http
+      protocol: TCP
+      port: 9090
+      targetPort: 9090
+      
+---
+# Deployment template
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: application-pod
+  labels:
+    app: application-pod
+spec:
+  selector:
+    matchLabels:
+      app: application-pod
+  replicas: 2
+  template:
+    metadata:
+      annotations:
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/tls-skip-verify: "true"
+        vault.hashicorp.com/agent-inject-secret-sql-role: "database/creds/sql-role"
+        vault.hashicorp.com/agent-inject-template-sql-role: |
+          {
+          {{- with secret "database/creds/sql-role" -}}
+            "db_connection": "host=postgres.postgress port=5432 user={{ .Data.username }} password={{ .Data.password }} dbname=postgresdb sslmode=disable"
+          {{- end }}
+          }
+        vault.hashicorp.com/role: "sql-role"
+      labels:
+        app: application-pod
+    spec:
+      serviceAccountName: application-pod
+      containers:
+      - name: app
+        image: jweissig/app:0.0.1
+---
+# Service account to allow pod access to Vault via K8s auth
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: application-pod
+  labels:
+    app: application-pod
