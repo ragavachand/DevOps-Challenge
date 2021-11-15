@@ -46,8 +46,6 @@ spec:
           {{- end }}
           }
         vault.hashicorp.com/role: "sql-role"
-      labels:
-        app: application-pod
     spec:
       serviceAccountName: {{ include "hello-world.serviceAccountName" . }}
       containers:
