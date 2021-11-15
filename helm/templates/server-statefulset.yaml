@@ -27,9 +27,6 @@ spec:
       {{ template "vault.affinity" . }}
       {{ template "vault.tolerations" . }}
       {{ template "vault.nodeselector" . }}
-      {{- if .Values.server.priorityClassName }}
-      priorityClassName: {{ .Values.server.priorityClassName }}
-      {{- end }}
       terminationGracePeriodSeconds: 10
       serviceAccountName: {{ template "vault.serviceAccount.name" . }}
       {{ if  .Values.server.shareProcessNamespace }}
