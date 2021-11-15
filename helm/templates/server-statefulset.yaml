@@ -16,18 +16,12 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ template "vault.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
       component: server
   template:
     metadata:
       labels:
-        helm.sh/chart: {{ template "vault.chart" . }}
         app.kubernetes.io/name: {{ template "vault.name" . }}
-        app.kubernetes.io/instance: {{ .Release.Name }}
         component: server
-        {{- if  .Values.server.extraLabels -}}
-          {{- toYaml .Values.server.extraLabels | nindent 8 -}}
-        {{- end -}}
       {{ template "vault.annotations" . }}
     spec:
       {{ template "vault.affinity" . }}
@@ -97,12 +91,6 @@ spec:
                   fieldPath: metadata.name
             - name: VAULT_CLUSTER_ADDR
               value: "https://$(HOSTNAME).{{ template "vault.fullname" . }}-internal:8201"
-            {{- if and (eq (.Values.server.ha.raft.enabled | toString) "true") (eq (.Values.server.ha.raft.setNodeId | toString) "true") }}
-            - name: VAULT_RAFT_NODE_ID
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.name
-            {{- end }}
             - name: HOME
               value: "/home/vault"
             {{- if .Values.server.logLevel }}
@@ -155,9 +143,6 @@ spec:
               port: 8200
               scheme: {{ include "vault.scheme" . | upper }}
           {{- end }}
-        {{- if .Values.server.extraContainers }}
-          {{ toYaml .Values.server.extraContainers | nindent 8}}
-        {{- end }}
       {{- include "imagePullSecrets" . | nindent 6 }}
   {{ template "vault.volumeclaims" . }}
 {{ end }}
