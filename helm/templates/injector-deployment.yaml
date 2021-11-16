@@ -17,15 +17,11 @@ spec:
       labels:
         app.kubernetes.io/name: {{ template "vault.name" . }}-agent-injector
         component: webhook
-        {{- if  .Values.injector.extraLabels -}}
-          {{- toYaml .Values.injector.extraLabels | nindent 8 -}}
-        {{- end -}}
       {{ template "injector.annotations" . }}
     spec:
       serviceAccountName: "{{ template "vault.fullname" . }}-agent-injector"
       containers:
         - name: sidecar-injector
-          {{ template "injector.resources" . }}
           image: "{{ .Values.injector.image.repository }}:{{ .Values.injector.image.tag }}"
           imagePullPolicy: "{{ .Values.injector.image.pullPolicy }}"
           env:
