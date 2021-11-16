@@ -34,11 +34,11 @@ vault write database/roles/db-app \
     max_ttl="24h"
 
 # Write the policy to allow read access to the role
-vault policy write web-dynamic ./config/web-policy.hcl
+vault policy write example-policy ./config/example-policy.hcl
 
 # Assign the policy to users who authenticate with Kubernetes service accounts called web
 vault write auth/kubernetes/role/web \
     bound_service_account_names=web \
     bound_service_account_namespaces=default \
-    policies=web-dynamic \
+    policies=example-policy \
     ttl=1h
