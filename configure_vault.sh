@@ -34,7 +34,7 @@ vault write database/roles/db-app \
     max_ttl="24h"
 
 # Write the policy to allow read access to the role
-vault policy write example-policy ./config/example-policy.hcl
+vault policy write example-policy ./example-policy.hcl
 
 # Assign the policy to users who authenticate with Kubernetes service accounts called web
 vault write auth/kubernetes/role/web \
