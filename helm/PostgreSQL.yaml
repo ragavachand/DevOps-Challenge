@@ -1,0 +1,50 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgresSQL
+  labels:
+    app: postgresSQL
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: postgresSQL
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgresSQL
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      service: postgresSQL
+      app: postgresSQL
+  template:
+    metadata:
+      labels:
+        service: postgresSQL
+        app: postgresSQL
+    spec:
+      containers:
+        - name: postgresSQL
+          image: hashicorpdemoapp/postgres:11.6
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: DevOps_Challenge
+            - name: POSTGRES_USER
+              value: DevOps_User
+            - name: POSTGRES_PASSWORD
+              value: DevOpsIsFun
+          volumeMounts:
+            - mountPath: "/var/lib/postgresql/data"
+              name: "pgsqldata"
+      volumes:
+        - name: pgsqldata
+          emptyDir: {}
