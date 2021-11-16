@@ -64,6 +64,9 @@ spec:
             httpGet:
               path: /
               port: http
+        env:
+            - name: "CONFIG_FILE"
+              value: "/vault/secrets/sql-role"
 ---
 # Service account to allow pod access to Vault via K8s auth
 
